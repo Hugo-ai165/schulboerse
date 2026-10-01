@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<title>SchulBörse</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef2f7;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:560px;margin:auto;min-height:100vh;background:#f8fafc;padding-bottom:88px}
+header{background:#fff;padding:18px 18px 14px;position:sticky;top:0;z-index:10;border-bottom:1px solid #e5e7eb}
+.logo{font-weight:900;font-size:27px}.logo span{color:#2563eb}.sub{font-size:12px;color:#64748b;margin-top:3px}
+main{padding:16px}.search{background:#fff;border:1px solid #e2e8f0;border-radius:15px;padding:12px;display:flex;gap:9px;align-items:center}.search input{border:0;outline:0;width:100%;font-size:15px;background:none}
+h2{font-size:20px;margin:20px 0 11px}.cats{display:flex;gap:8px;overflow:auto;padding-bottom:3px}.cat{white-space:nowrap;border:1px solid #dbe2ea;background:#fff;border-radius:999px;padding:9px 12px;font-size:13px}.cat.active{background:#2563eb;color:#fff;border-color:#2563eb}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:17px;overflow:hidden;box-shadow:0 3px 12px #0f172a0a}.pic{height:140px;background:#eaf0ff;display:flex;align-items:center;justify-content:center;font-size:48px}.body{padding:11px}.title{font-weight:750;font-size:14px;min-height:36px}.price{font-weight:850;margin-top:7px}.meta{font-size:11px;color:#64748b;margin-top:4px}.fav{border:0;background:none;font-size:22px;float:right;cursor:pointer}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(560px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #e5e7eb;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:20}.nav{border:0;background:none;color:#64748b;font-size:10px}.nav b{display:block;font-size:20px;margin-bottom:2px}.nav.active{color:#2563eb}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:17px;padding:15px;margin-bottom:12px}.field{margin:12px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #dbe2ea;border-radius:11px;padding:11px;font:inherit;background:#fff}.field textarea{min-height:95px}.primary{width:100%;border:0;border-radius:13px;padding:13px;background:#2563eb;color:#fff;font-weight:800;font-size:15px}.secondary{width:100%;border:1px solid #cbd5e1;border-radius:13px;padding:12px;background:#fff;font-weight:700}
+.detailpic{height:240px;border-radius:18px;background:#eaf0ff;display:flex;align-items:center;justify-content:center;font-size:80px}.back{border:0;background:none;color:#2563eb;font-size:15px;padding:0 0 12px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.badge{display:inline-block;padding:5px 8px;background:#eff6ff;color:#1d4ed8;border-radius:999px;font-size:11px;font-weight:700}.empty{text-align:center;padding:42px 10px;color:#64748b}.chat{padding:12px 0;border-bottom:1px solid #e5e7eb}.chat:last-child{border-bottom:0}.msg{background:#eff6ff;padding:10px;border-radius:12px;margin:7px 0}.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;z-index:99;display:none}
+@media(min-width:700px){body{padding:20px}.app{border-radius:24px;overflow:hidden;box-shadow:0 12px 50px #0f172a22}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">Schul<span>Börse</span></div><div class="sub">Schulsachen kaufen, verkaufen & Nachhilfe finden.</div></header>
+<main id="main"></main>
+<nav>
+<button class="nav active" data-page="home"><b>⌂</b>Start</button>
+<button class="nav" data-page="search"><b>⌕</b>Suchen</button>
+<button class="nav" data-page="sell"><b>＋</b>Verkaufen</button>
+<button class="nav" data-page="messages"><b>◌</b>Chats</button>
+<button class="nav" data-page="profile"><b>◯</b>Profil</button>
+</nav>
+<div id="toast" class="toast"></div>
+</div>
+<script>
+const demo=[
+{id:1,title:"Mathematik 1 – Gymnasium",price:20,cat:"Schulbücher",condition:"Sehr gut",place:"Liestal",seller:"Emin",icon:"📘",desc:"Gebrauchtes Mathematikbuch, sauber und gut erhalten."},
+{id:2,title:"TI-84 Plus CE",price:80,cat:"Taschenrechner",condition:"Gut",place:"Liestal",seller:"Noah",icon:"🧮",desc:"Funktionierender Taschenrechner für die Schule."},
+{id:3,title:"Französisch Grammatik",price:12,cat:"Schulbücher",condition:"Gut",place:"Sissach",seller:"Lina",icon:"📕",desc:"Praktisches Grammatikbuch für Französisch."},
+{id:4,title:"Chemie Lernkarten",price:8,cat:"Lernmaterial",condition:"Sehr gut",place:"Basel",seller:"Mia",icon:"🧪",desc:"Lernkarten zur Prüfungsvorbereitung."},
+{id:5,title:"Englisch Nachhilfe",price:25,cat:"Nachhilfe",condition:"Online / vor Ort",place:"Liestal",seller:"Sara",icon:"🇬🇧",desc:"Englisch-Nachhilfe für verschiedene Klassenstufen."},
+{id:6,title:"Deutsch Nachhilfe",price:25,cat:"Nachhilfe",condition:"Online",place:"Basel",seller:"Luca",icon:"🇩🇪",desc:"Deutsch-Nachhilfe online."}
+];
+let items=JSON.parse(localStorage.getItem("sb_items")||"null")||demo;
+let favs=JSON.parse(localStorage.getItem("sb_favs")||"[]");
+let chats=JSON.parse(localStorage.getItem("sb_chats")||"[]");
+let profile=JSON.parse(localStorage.getItem("sb_profile")||"null")||{name:"Mein Profil",school:"Noch keine Schule",place:"Schweiz"};
+let page="home",cat="Alle",query="";
+const go=p=>{page=p;window.scrollTo(0,0);render()};
+const save=()=>{localStorage.setItem("sb_items",JSON.stringify(items));localStorage.setItem("sb_favs",JSON.stringify(favs));localStorage.setItem("sb_chats",JSON.stringify(chats));localStorage.setItem("sb_profile",JSON.stringify(profile))};
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function toast(t){let e=document.getElementById("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",1800)}
+function cards(list){return list.map(x=>`<div class="card" onclick="detail(${x.id})"><div class="pic">${x.icon||"📚"}</div><div class="body"><button class="fav" onclick="event.stopPropagation();toggleFav(${x.id})">${favs.includes(x.id)?"♥":"♡"}</button><div class="title">${esc(x.title)}</div><div class="price">CHF ${x.price}</div><div class="meta">${esc(x.condition)} · ${esc(x.place)}</div></div></div>`).join("")}
+function categories(){return ["Alle","Schulbücher","Taschenrechner","Lernmaterial","Nachhilfe","Schreibwaren"].map(c=>`<button class="cat ${cat===c?"active":""}" onclick="cat='${c}';go(page)">${c}</button>`).join("")}
+function filtered(){return items.filter(x=>(cat==="Alle"||x.cat===cat)&&(`${x.title} ${x.cat} ${x.place} ${x.seller}`).toLowerCase().includes(query.toLowerCase()))}
+function home(){return `<div class="panel"><b>📚 Alles für deine Schule</b><div style="font-size:13px;color:#64748b;margin-top:4px">Finde günstige gebrauchte Schulsachen und Nachhilfe.</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="primary" onclick="go('sell')">＋ Verkaufen</button><button class="secondary" onclick="go('profile')">👤 Mein Profil</button></div><div class="search">⌕<input placeholder="Was suchst du?" value="${esc(query)}" oninput="query=this.value;render()"></div><h2>Kategorien</h2><div class="cats">${categories()}</div><h2>Angebote</h2><div class="grid">${cards(filtered())||'<div class="empty">Keine Angebote gefunden.</div>'}</div>`}
+function searchPage(){return `<h2>Suchen</h2><div class="search">⌕<input placeholder="Produkt, Fach oder Ort" value="${esc(query)}" oninput="query=this.value;updateResults()"></div><div class="cats" style="margin-top:12px">${categories()}</div><div id="results" class="grid" style="margin-top:16px">${cards(filtered())||'<div class="empty">Keine passenden Angebote.</div>'}</div>`}
+function updateResults(){let r=document.getElementById("results");if(r)r.innerHTML=cards(filtered())||'<div class="empty">Keine passenden Angebote.</div>'}
+function sell(){return `<h2>Verkaufen</h2><div class="panel"><div class="field"><label>Titel</label><input id="t" placeholder="z. B. Mathematik 2"></div><div class="field"><label>Beschreibung</label><textarea id="d" placeholder="Beschreibe den Artikel..."></textarea></div><div class="field"><label>Kategorie</label><select id="c">${["Schulbücher","Taschenrechner","Lernmaterial","Schreibwaren","Nachhilfe","Sonstiges"].map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>Zustand</label><select id="z"><option>Sehr gut</option><option>Gut</option><option>Akzeptabel</option></select></div><div class="field"><label>Preis (CHF)</label><input id="p" type="number" min="0" placeholder="20"></div><div class="field"><label>Region</label><input id="l" placeholder="z. B. Liestal"></div><button class="primary" onclick="publish()">Angebot veröffentlichen</button></div>`}
+function publish(){let title=document.getElementById("t").value.trim();if(!title)return toast("Bitte einen Titel eingeben.");items.unshift({id:Date.now(),title,price:Number(document.getElementById("p").value)||0,cat:document.getElementById("c").value,condition:document.getElementById("z").value,place:document.getElementById("l").value||"Schweiz",seller:"Du",icon:"📚",desc:document.getElementById("d").value});save();toast("Angebot veröffentlicht");page="home";render()}
+function messages(){return `<h2>Nachrichten</h2><div class="panel">${chats.length?chats.map((c,i)=>`<div class="chat"><div class="row"><b>${esc(c.seller)}</b><span class="small">${esc(c.title)}</span></div><div class="msg">${esc(c.text)}</div><button class="secondary" onclick="reply(${i})">Antworten</button></div>`).join(""):`<div class="empty">Noch keine Chats.<br>Öffne ein Angebot und kontaktiere den Verkäufer.</div>`}</div>`}
+function reply(i){let t=prompt("Deine Nachricht:");if(!t)return;chats[i].text=t;save();render();toast("Nachricht gespeichert")}
+function profilePage(){let mine=items.filter(x=>x.seller==="Du"), fs=items.filter(x=>favs.includes(x.id));return `<h2>Profil</h2><div class="panel"><div style="font-size:45px">👤</div><h2 style="margin:6px 0">${esc(profile.name)}</h2><div class="small">${esc(profile.school)} · ${esc(profile.place)}</div><button class="secondary" style="margin-top:12px" onclick="editProfile()">Profil bearbeiten</button></div><h2>Meine Angebote</h2><div class="grid">${cards(mine)||'<div class="empty">Noch keine eigenen Angebote.</div>'}</div><h2>Favoriten (${fs.length})</h2><div class="grid">${cards(fs)||'<div class="empty">Noch keine Favoriten.</div>'}</div>`}
+function editProfile(){let n=prompt("Name",profile.name);if(n===null)return;let s=prompt("Schule",profile.school);if(s===null)return;let p=prompt("Region",profile.place);if(p===null)return;profile={name:n||"Mein Profil",school:s||"Noch keine Schule",place:p||"Schweiz"};save();render();toast("Profil gespeichert")}
+function toggleFav(id){favs=favs.includes(id)?favs.filter(x=>x!==id):[...favs,id];save();render();toast(favs.includes(id)?"Zu Favoriten hinzugefügt":"Aus Favoriten entfernt")}
+function detail(id){let x=items.find(i=>i.id===id);document.getElementById("main").innerHTML=`<button class="back" onclick="render()">← Zurück</button><div class="detailpic">${x.icon||"📚"}</div><div class="panel" style="margin-top:12px"><div class="row"><span class="badge">${esc(x.cat)}</span><button class="fav" onclick="toggleFav(${x.id});detail(${x.id})">${favs.includes(x.id)?"♥":"♡"}</button></div><h2>${esc(x.title)}</h2><div style="font-size:25px;font-weight:900">CHF ${x.price}</div><div class="meta">${esc(x.condition)} · ${esc(x.place)}</div><p>${esc(x.desc)}</p><b>Verkäufer: ${esc(x.seller)}</b></div><button class="primary" onclick="contact(${x.id})">Verkäufer kontaktieren</button>`}
+function contact(id){let x=items.find(i=>i.id===id);if(x.seller==="Du")return toast("Das ist dein eigenes Angebot.");let t=prompt(`Nachricht an ${x.seller}:`);if(!t)return;chats.unshift({seller:x.seller,title:x.title,text:t});save();page="messages";render();toast("Nachricht gesendet")}
+function render(){document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));let m=document.getElementById("main");if(page==="home")m.innerHTML=home();if(page==="search")m.innerHTML=searchPage();if(page==="sell")m.innerHTML=sell();if(page==="messages")m.innerHTML=messages();if(page==="profile")m.innerHTML=profilePage()}
+document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>go(n.dataset.page));
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+render();
+</script>
+</body>
+</html>
